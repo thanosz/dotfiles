@@ -1,0 +1,116 @@
+conky.config = {
+	background = true,
+	use_xft = true,
+        font = 'sans-serif:normal:size=9',
+	xftalpha = 1,
+	update_interval = 1.0,
+	top_cpu_separate = true,
+	total_run_times = 0,
+	own_window = true,
+	--own_window_argb_visual = true,
+	--own_window_argb_value = 210,-- semi-transparent
+	own_window_type = 'normal',
+	--own_window_colour = '002400',
+	own_window_title = 'Cronus',
+	double_buffer = true,
+	minimum_width = 145, 
+	minimum_height = 680,
+	maximum_width = 150,
+	max_text_width = 0,
+	draw_shades = false,
+	draw_outline = false,
+	draw_borders = false,
+	draw_graph_borders = true,
+	default_color = 'gray',
+	default_shade_color = 'royalblue',
+	default_outline_color = 'white',
+	alignment = 'top_left',
+	gap_x = 22,
+	gap_y = 40,
+	no_buffers = true,
+	uppercase = false,
+	cpu_avg_samples = 2,
+	override_utf8_locale = true,
+	top_cpu_separate = true,
+};
+
+conky.text = [[
+#${font play:bold:size=16}$alignc${time %H:%M:%S}
+#${font play:bold:size=10}$alignc${time %d.%m.%Y}
+${font play:normal:size=10}$alignc$nodename
+${font play:normal:size=10}$alignc$uptime
+${color royalblue}${font play:bold:size=10}SYSTEM ${hr 2}${color}
+${font play:normal:size=8}$alignc kernel $kernel
+${font play:bold:size=9}$alignc${loadavg}
+${loadgraph 91FFFF 043C8C -t }
+${font play:normal:size=9}BAT0: ${battery_short BAT0}\
+# Color battery bar based on percentage remaining.
+${if_match ${battery_percent BAT0} < 15}${color red}${else}\
+${if_match ${battery_percent BAT0} < 25}${color red}${else}\
+${if_match ${battery_percent BAT0} < 35}${color royalblue}${else}\
+${if_match ${battery_percent BAT0} < 70}${color blue}${else}\
+${color green}${endif}${endif}${endif}${endif}\
+${alignr}${battery_bar 8,60 BAT0}${color}
+
+${color royalblue}${font play:bold:size=10}CPU ${hr 2}${color}
+${font play:normal:size=9}${exec cat /proc/cpuinfo | grep 'model name' | sed -e 's/model name.*: //' | cut -d ' ' -f 4,3,6 | tail -n 1 }
+${color white}${font play:bold:size=8}$freq MHz, ${color orange}${execi 1 sensors |grep 'Core 0' |awk '{print$3}'}${color}, ${font play:normal:size=8}${execi 1 sensors | grep fan1 | awk '{print $2,$3}'}${color}${font}
+${font play:normal:size=8}${execi 10 WATT=$(echo "scale=1; `cat /sys/devices/virtual/powercap/intel-rapl-mmio/intel-rapl-mmio:0/constraint_0_power_limit_uw` / 1000000" | bc); GOV=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor); echo "PWR: ${WATT} Watt (${GOV})"} 
+${font play:normal:size=9}${cpugraph cpu FFFF00 FF0000 s -t}
+CPU: ${cpu cpu0}% ${color brown}${cpubar cpu0}${color}
+${cpubar cpu1 8,33}  ${cpubar cpu2 8,33}  ${cpubar cpu3 8,33}  ${cpubar cpu4 8,33}
+${cpubar cpu5 8,33}  ${cpubar cpu6 8,33}  ${cpubar cpu7 8,33}  ${cpubar cpu8 8,33}
+
+${color royalblue}${font play:bold:size=10}PROCESSES ${hr 2}${color}
+Name $alignr  CPU%${font play:normal:size=9}
+${top name 1}${alignr} ${top cpu 1}%
+${top name 2}${alignr} ${top cpu 2}%
+${top name 3}${alignr} ${top cpu 3}%
+${top name 4}${alignr} ${top cpu 4}%
+${top name 5}${alignr} ${top cpu 5}%
+
+${color royalblue}${font play:bold:size=10}MEM ${hr 2}${color}
+${font play:normal:size=8}RAM $alignc $mem/$memmax $alignr $memperc%
+$membar
+SWAP $alignc ${swap}/${swapmax} $alignr ${swapperc}%
+${swapbar}
+
+${color royalblue}${font play:bold:size=10}DISK ${hr 2}${color}
+${font play:normal:size=9}I/O: ${diskio}${alignr}${diskiograph 8,58 F57900 FCAF3E}
+${font play:normal:size=8}${fs_used /}/${fs_size /} ${alignr}${fs_bar 8,58 /}
+
+${color royalblue}${font play:bold:size=10}NET ${hr 2}${color}
+#${font}SSID: ${wireless_essid wlo1 }
+#Signal: ${wireless_link_qual_perc wlo1}% ${alignr}${wireless_link_bar 8,60 wlo1}
+${color green}${font play:normal:size=9}${alignc}${execi 60 curl -s http://ifconfig.co/json | jq -r '.["ip","country"]' | sed 's/"//g' | tr '\n' ' ' | sed 's/.$//g' } ${color}
+${color green}${font play:normal:size=9}${alignc}gw: ${gw_ip}${color}
+${if_up wlo1}
+${font play:bold:size=9}wifi ${color green} $alignr ${addr wlo1}${color}
+${font play:normal:size=8}Down ${downspeedf wlo1} k/s ${alignr}Up ${upspeedf wlo1} k/s 
+${downspeedgraph wlo1 20,71 dddddd  009900 0} ${alignr}${upspeedgraph wlo1 20,71 dddddd  800000 0 -l}
+${font play:normal:size=8}Total ${totaldown wlo1} ${alignr}Total ${totalup wlo1}${endif}
+#
+${if_existing /sys/class/net/eno2/operstate up}
+${font play:bold:size=9}wired${color green} $alignr ${addr eno2}${color}
+${font play:normal:size=8}Down ${downspeedf eno2} k/s ${alignr}Up ${upspeedf eno2} k/s
+${downspeedgraph eno2 20,71 dddddd 009900 0 -t } ${alignr}${upspeedgraph eno2 20,71 dddddd 800000 0 -t  }
+${font play:normal:size=8}Total ${totaldown eno2} ${alignr}Total ${totalup eno2}${endif}
+#
+${if_existing /sys/class/net/enp10s0u1u2/operstate up}
+${font play:bold:size=9}wired${color green} $alignr ${addr enp10s0u1u2}${color}
+${font play:normal:size=8}Down ${downspeedf enp10s0u1u2} k/s ${alignr}Up ${upspeedf enp10s0u1u2} k/s
+${downspeedgraph enp10s0u1u2 20,71 dddddd 009900 0 -t } ${alignr}${upspeedgraph enp10s0u1u2 20,71 dddddd 800000 0 -t  }
+${font play:normal:size=8}Total ${totaldown enp10s0u1u2} ${alignr}Total ${totalup enp10s0u1u2}${endif}
+#
+${if_existing /sys/class/net/vpn0/operstate up}
+${font play:bold:size=9}vpn0 ${color green} $alignr ${addr vpn0}${color}
+${font play:normal:size=9}Down ${downspeedf vpn0} k/s ${alignr}Up ${upspeedf vpn0} k/s
+${downspeedgraph vpn0 20,71 dddddd  009900 0 -t } ${alignr}${upspeedgraph vpn0 20,71 dddddd  800000 0 -t }
+Total ${totaldown vpn0} ${alignr}Total ${totalup vpn0}${endif}
+#
+${if_up tun0}
+${font play:bold:size=9}tun0 ${color green} $alignr ${addr tun0}${color}
+${font play:normal:size=9}Down ${downspeedf tun0} k/s ${alignr}Up ${upspeedf tun0} k/s
+${downspeedgraph tun0 20,71 dddddd  009900 0 -t } ${alignr}${upspeedgraph tun0 20,71 dddddd  800000 0 -t }
+Total ${totaldown vpn0} ${alignr}Total ${totalup vpn0}${endif}
+]];

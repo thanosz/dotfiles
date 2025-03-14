@@ -1,0 +1,136 @@
+conky.config = {
+	background = true,
+	use_xft = true,
+	font = 'Droid:normal:size 8',
+	font = 'sans-serif:normal:size=8',
+	xftalpha = 1,
+	update_interval = 1.0,
+	top_cpu_separate = true,
+	total_run_times = 0,
+	own_window = true,
+	own_window_argb_visual = true,
+	own_window_argb_value = 0,
+	own_window_transparent = false,
+	own_window_argb_visual = true,
+	own_window_argb_value = 240,-- semi-transparent
+	own_window_type = 'normal',
+	own_window_colour = '#151515',
+	own_window_title = 'Bethgar',
+--own_window_hints undecorated,below,sticky,skip_taskbar,skip_pager
+	double_buffer = true,
+	minimum_width = 150, minimum_height = 680,
+	maximum_width = 150,
+	max_text_width = 0,
+	draw_shades = false,
+	draw_outline = false,
+	draw_borders = false,
+	draw_graph_borders = true,
+	default_color = 'gray',
+	default_shade_color = 'blue',
+	default_outline_color = 'white',
+	alignment = 'top_left',
+	gap_x = 22,
+	gap_y = 40,
+	no_buffers = true,
+	uppercase = false,
+	cpu_avg_samples = 2,
+	override_utf8_locale = true,
+	top_cpu_separate = true,
+
+};
+
+conky.text = [[
+${font sans-serif:bold:size=16}$alignc${time %H:%M:%S}
+${font sans-serif:bold:size=10}$alignc${time %d.%m.%Y}
+${color orange}${font sans-serif:bold:size=8}SYSTEM ${hr 2}${color}
+${font sans-serif:normal:size=8}$alignc kernel $kernel
+#Host:$alignr$nodename
+#Uptime:$alignr$uptime
+${font sans-serif:bold:size=9}$alignc${loadavg}${font}
+${loadgraph 57900 FCAF3E -t }
+BAT0: ${battery_short BAT0}\
+# Color battery bar based on percentage remaining.
+${if_match ${battery_percent BAT0} < 15}${color red}${else}\
+${if_match ${battery_percent BAT0} < 25}${color red}${else}\
+${if_match ${battery_percent BAT0} < 35}${color orange}${else}\
+${if_match ${battery_percent BAT0} < 70}${color yellow}${else}\
+${color green}${endif}${endif}${endif}${endif}\
+${alignr}${battery_bar 8,60 BAT0}${color}
+
+${color orange}${font sans-serif:bold:size=8}CPU ${hr 2}${color}
+${font sans-serif:normal:size=7}${exec cat /proc/cpuinfo | grep 'model name' | sed -e 's/model name.*: //' | cut -d ' ' -f 1,2,4,5 | tail -n 1 }
+${color white}${font sans-serif:bold:size=6}$freq MHz, ${color orange}${execi 1 sensors |grep 'Core 0' |awk '{print$3}'}${color}, ${execi 1 sensors | grep fan1 | awk '{print $2,$3}'}${color}${font}
+${font sans-serif:bold:size=6}${execi 10 WATT=$(echo "scale=1; `cat /sys/devices/virtual/powercap/intel-rapl-mmio/intel-rapl-mmio:0/constraint_0_power_limit_uw` / 1000000" | bc); GOV=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor); echo "PWR: ${WATT} Watt (${GOV})"} 
+${font sans-serif:normal:size=8}${cpugraph cpu FFFF00 FF0000 s -t}
+CPU: ${cpu cpu0}% ${color brown}${cpubar cpu0}${color}
+${cpubar cpu1 8,33}  ${cpubar cpu2 8,33}  ${cpubar cpu3 8,33}  ${cpubar cpu4 8,33}
+${cpubar cpu5 8,33}  ${cpubar cpu6 8,33}  ${cpubar cpu7 8,33}  ${cpubar cpu8 8,33}
+
+${color brown}${font sans-serif:bold:size=8}PROCESSES ${hr 2}${color}
+Name $alignr  CPU%${font}
+${top name 1}${alignr} ${top cpu 1}%
+${top name 2}${alignr} ${top cpu 2}%
+${top name 3}${alignr} ${top cpu 3}%
+${top name 4}${alignr} ${top cpu 4}%
+${top name 5}${alignr} ${top cpu 5}%
+
+${color orange}${font sans-serif:bold:size=8}MEM ${hr 2}${color}
+${font ubuntu mono:normal:size=8}RAM $alignc $mem/$memmax $alignr $memperc%
+$membar
+SWAP $alignc ${swap}/${swapmax} $alignr ${swapperc}%
+${swapbar}
+
+${color orange}${font sans-serif:bold:size=8}DISK ${hr 2}${color}
+${font ubuntu mono:normal:size=8}I/O: ${diskio}${alignr}${diskiograph 8,58 F57900 FCAF3E}
+${fs_used /}/${fs_size /} ${alignr}${fs_bar 8,58 /}
+
+${color orange}${font sans-serif:bold:size=8}NET ${hr 2}${color}
+${font sans-serif:normal:size=8}${alignc}${color cyan}${execi 60 curl -s http://ifconfig.co/json | jq -r '.["ip","country"]' | sed 's/"//g' | tr '\n' ' ' | sed 's/.$//g' } ${color}
+#${font sans-serif:bold:size=8}Local IPs:${color}
+#${font}${execi 1000 ip -o addr show scope global | awk '{split($4, a, "/"); print $2" "a[1]}' | awk '{ $NF = "\t" $NF; print }' | column -t }  
+#${color yellow}${font sans-serif:normal:size=8}Default Route:${color}
+#${execi 1000 ip r s default | head -n 1 | cut -d ' ' -f3,5}
+#${font sans-serif:normal:size=8}Down:${downspeed ${execi 1000 ip r s default | head -n 1 | cut -d ' ' -f5}}  Up: ${upspeed ${execi 1000 ip r s default | head -n 1 | cut -d ' ' -f5}} 
+#
+#${font}SSID: ${wireless_essid wlp0s20f3 }
+#Signal: ${wireless_link_qual_perc wlp0s20f3}% ${alignr}${wireless_link_bar 8,60 wlp0s20f3}
+${if_existing /sys/class/net/wlp0s20f3/operstate up}
+${font sans-serif:bold:size=8}wifi ${font}${color green} $alignr ${execi 60 ip -4 addr | grep wlp0s20f3 | grep -oP '(?<=inet\s)\d+(\.\d+){3}'}${color}
+${font ubuntu mono:normal:size=8}Down ${downspeedf wlp0s20f3} k/s ${alignr}Up ${upspeedf wlp0s20f3} k/s 
+${downspeedgraph wlp0s20f3 20,71 dddddd  009900 0} ${alignr}${upspeedgraph wlp0s20f3 20,71 dddddd  800000 0 -t}
+Total ${totaldown wlp0s20f3} ${alignr}Total ${totalup wlp0s20f3}${endif}
+#
+${if_existing /sys/class/net/ens4u1u2/operstate up}
+${font sans-serif:bold:size=8}wired${font}${color green} $alignr ${execi 60 ip -4 addr | grep ens4u1u2 | grep -oP '(?<=inet\s)\d+(\.\d+){3}'}${color}
+${font ubuntu mono:normal:size=8}Down ${downspeedf ens4u1u2} k/s ${alignr}Up ${upspeedf ens4u1u2} k/s
+${downspeedgraph ens4u1u2 20,71 dddddd  009900 0 -t } ${alignr}${upspeedgraph ens4u1u2 20,71 dddddd 800000 0 -t  }
+Total ${totaldown ens4u1u2} ${alignr}Total ${totalup ens4u1u2}${endif}
+#
+${if_existing /sys/class/net/enp0s31f6/operstate up}
+${font sans-serif:bold:size=8}wired${font}${color green} $alignr ${execi 60 ip -4 addr | grep enp0s31f6 | grep -oP '(?<=inet\s)\d+(\.\d+){3}'}${color}
+${font ubuntu mono:normal:size=8}Down ${downspeedf enp0s31f6} k/s ${alignr}Up ${upspeedf enp0s31f6} k/s
+${downspeedgraph enp0s31f6 20,71 dddddd  009900 0 -t } ${alignr}${upspeedgraph enp0s31f6 20,71 dddddd 800000 0 -t  }
+Total ${totaldown ens4u1u2} ${alignr}Total ${totalup ens4u1u2}${endif}
+${if_existing /sys/class/net/vpn0/operstate up}
+${font sans-serif:bold:size=8}vpn0 ${font}${color green} $alignr ${execi 60 ip -4 addr | grep vpn0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}'}${color}
+${font ubuntu mono:normal:size=8}Down ${downspeedf vpn0} k/s ${alignr}Up ${upspeedf vpn0} k/s
+${downspeedgraph vpn0 20,71 dddddd  009900 0 -t } ${alignr}${upspeedgraph vpn0 20,71 dddddd  800000 0 -t }
+Total ${totaldown vpn0} ${alignr}Total ${totalup vpn0}${endif}
+#
+${if_existing /sys/class/net/tun0/operstate up}
+${font sans-serif:bold:size=8}tun0 ${font}${color green} $alignr ${execi 60 ip -4 addr | grep tun0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}'}${color}
+${font ubuntu mono:normal:size=8}Down ${downspeedf tun0} k/s ${alignr}Up ${upspeedf tun0} k/s
+${downspeedgraph tun0 20,71 dddddd  009900 0 -t } ${alignr}${upspeedgraph tun0 20,71 dddddd  800000 0 -t }
+Total ${totaldown tun0} ${alignr}Total ${totalup tun0}${endif}
+#
+${if_existing /sys/class/net/gym/operstate unknown}
+${font sans-serif:bold:size=8}gym ${font}${color green} $alignr ${execi 60 ip -4 addr | grep gym | grep -oP '(?<=inet\s)\d+(\.\d+){3}'}${color}
+${font ubuntu mono:normal:size=8}Down ${downspeedf gym} k/s ${alignr}Up ${upspeedf gym} k/s
+${downspeedgraph gym 20,71 dddddd  009900 0 -t } ${alignr}${upspeedgraph gym 20,71 dddddd  800000 0 -t }
+Total ${totaldown gym} ${alignr}Total ${totalup gym}${endif}
+# 
+#${color green}${font sans-serif:bold:size=8}DISKS ${hr 2}${color}
+#${font sans-serif:normal:size=8}/ $alignc ${fs_used /} / ${fs_size /} $alignr ${fs_used_perc /}%
+#${fs_bar /}
+#${font sans-serif:bold:size=8}Frequency: $freq MHz ${hr 1}${color}
+]];

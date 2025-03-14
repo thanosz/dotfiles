@@ -1,0 +1,66 @@
+[[ -z $HOME_PATH_SET ]] && export PATH=$HOME/.local/bin:$HOME/bin:$PATH:$HOME/go/bin
+export HOME_PATH_SET=1
+export LIBVIRT_DEFAULT_URI="qemu:///system"
+export DOCKER_BUILDKIT=1
+export PDSH_RCMD_TYPE=ssh
+export LANG=en_US.UTF-8 LC_CTYPE=en_US.UTF-8
+export GPG_TTY=$(tty)
+export KUBE_EDITOR=vim
+
+if which bat &>/dev/null; then alias cat="bat --theme 1337 -p --pager none"; fi
+if which eza &>/dev/null; then alias ls="eza -g"; fi
+#if which ngrok &>/dev/null; then eval "$(ngrok completion)"; fi
+if which fortune > /dev/null 2>&1; then
+    fortune | fmt -80 -s | $(shuf -n 1 -e cowsay cowthink) -$(shuf -n 1 -e b d g p s t w y) -f $(shuf -n 1 -e $(cowsay -l | tail -n +2)) -n
+fi
+
+alias pscgroup="ps xawf -eo pid,user,cgroup,args"
+alias ip="ip -c"
+alias startx="startx & vlock"
+alias urxvt="urxvt -tn xterm -sl 30000 -bg black -fg white +tr -fn 'xft:ubuntumono:size=11' "
+alias gconf2='dconf-editor'
+alias list-terminal-colors='spectrum_ls'
+alias findbig='f(){ du -ahx $1 | sort -rh | head -40 }; f'
+alias k=kubectl
+alias kctx='kubectl config use-context `k config get-contexts -o name | fzf`'
+alias kns=$'NAMESPACE=$(kubectl get ns | grep -v NAME | awk \'{print $1}\' | fzf ); [[ -n ${NAMESPACE} ]] && kubectl config set-context --current --namespace=${NAMESPACE}'
+alias kcurns=$'kubectl config get-contexts  | grep \'^* \' | awk \'{print $5}\''
+
+
+if which docker &>/dev/null; then CONTAINER_RUNTIME=docker; fi
+if which podman &>/dev/null; then CONTAINER_RUNTIME=podman; fi
+if ! which vagrant &>/dev/null; then
+   alias vagrant='echo Note: you are using a docker image to run vagrant; \
+        $CONTAINER_RUNTIME run --rm -it \
+        --volume /run/libvirt:/run/libvirt \
+        --volume "${HOME}:${HOME}:rslave" \
+        --volume "${HOME}/.vagrant.d/boxes:/vagrant/boxes:rslave" \
+        --volume "${HOME}/.vagrant.d/data:/vagrant/data:rslave" \
+        --env "HOME=${HOME}" \
+        --volume /etc/exports:/etc/exports \
+        --workdir "$(pwd)" \
+        --net host \
+        --privileged \
+        --security-opt label=disable \
+        --entrypoint /usr/bin/vagrant \
+        docker.io/vagrantlibvirt/vagrant-libvirt:latest '
+fi
+
+################ MACOS #################
+if [[ "$(uname)" == 'Darwin' ]]; then
+	unalias ip
+  export HOMEBREW_CASK_OPTS=--no-quarantine
+	alias xsd_open=open
+	alias find=gfind
+	alias brew-upgrade-casks="brew outdated --cask --verbose --greedy | grep -v '(latest)' | awk '{print \$1}' | xargs echo | xargs brew reinstall --cask"
+
+	if which glocate > /dev/null; then
+    alias locate=glocate
+    export LOCATE_PATH="$HOME/locatedb"
+	fi
+	if which gupdatedb > /dev/null; then 
+		alias updatedb='echo This is an alias; gupdatedb --localpaths="/Users /Applications /opt /" --prunepaths=/Volumes --prunepaths=/Users/than/Library/CloudStorage/Box-Box --output=$HOME/locatedb'
+	fi
+    eval "$(jenv init -)"
+fi
+

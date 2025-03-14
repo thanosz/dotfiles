@@ -1,0 +1,92 @@
+[[ ! $ZSH_THEME =~ "agnoster" ]] && return
+
+PRIMARY_FG=white
+
+prompt_context() {
+  local user=`whoami`
+
+  if [[ "$user" != "$DEFAULT_USER" || -n "$SSH_CONNECTION" ]]; then
+    BG_COLOR=22   # default: blue
+    FG_COLOR=255  # bright white
+    OS=$(uname -s)
+    if [[ $OS == "Darwin" ]]; then
+      BG_COLOR=226   # yellow 142, bright 226
+      FG_COLOR=black
+    elif [[ $OS == "Linux" ]]; then
+      . /etc/os-release
+      if [[ $ID == "rhel" ]]; then
+        BG_COLOR=160  # red (hat)
+      elif [[ $ID == "fedora" ]]; then
+        BG_COLOR=27   # green
+      elif [[ $ID == "ubuntu" ]]; then
+        BG_COLOR=53   # dark purple
+      fi
+    fi
+    prompt_segment $BG_COLOR $FG_COLOR "%(!.%{%F{yellow}%}.)%n@%m"
+  fi
+}
+
+prompt_dir() {
+  prompt_segment 238 $PRIMARY_FG '%~'
+}
+
+
+k8sprompt() {
+  K8SPROMPT_SET=true
+}
+
+prompt_k8s() {
+  [[ $K8SPROMPT_SET != "true" ]] && return
+
+  kcurns=$(kubectl config get-contexts  | grep '^* ' | awk '{print $5}')
+  kcluster=$(kubectl config view -o jsonpath='{.clusters[].name}') #returns the first alphabetical cluster entry of .config
+
+  k8s_symbol=$'\u2388'
+
+  #prompt_segment  blue white "$k8s_symbol" 
+  prompt_segment  052 white "$k8s_symbol $kcluster"
+  prompt_segment  202 black "$kcurns"
+
+}
+
+dockerprompt() {
+  DOCKERPROMPT_SET=true
+}
+
+prompt_docker() {
+  [[ $DOCKERPROMPT_SET != "true" ]] && return
+  prompt_segment 055 'white' "🐳  $(docker context show)"
+
+}
+
+function toolbox_prompt_info() {
+  [[ -f /run/.toolboxenv ]] && echo -n "⬢ "
+}
+
+
+prompt_end() {
+  if [[ -n $CURRENT_BG ]]; then
+    echo -n "%{%k%F{$CURRENT_BG}%}$SEGMENT_SEPARATOR"
+  else
+    echo -n "%{%k%}"
+  fi
+  echo -n "%{%f%}"
+  CURRENT_BG=''
+}
+
+build_prompt() {
+  RETVAL=$?
+  toolbox_prompt_info
+  prompt_status
+  prompt_context
+  prompt_virtualenv
+  prompt_aws
+  prompt_docker
+  prompt_k8s
+  prompt_dir
+  prompt_git
+  prompt_bzr
+  prompt_hg
+  prompt_end
+}
+

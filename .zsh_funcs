@@ -1,0 +1,47 @@
+occtx () {
+  [[ ! -d ~/.kube/configs ]] && mkdir ~/.kube/configs
+
+  alias=$(ls ~/.kube/configs/ | fzf)
+  [[ $alias == "" ]] && return
+  selected=~/.kube/configs/$alias
+  rm ~/.kube/config 2>/dev/null
+
+  command=$(grep '#_#' $selected | cut -d ' ' -f 2-)
+  if [[ $command == "" ]]; then
+    cp $selected ~/.kube/config
+    return
+  fi
+  $=command 
+  [[ $? -ne 0 ]] && return
+  cluster=$(echo $command | cut -d : -f 2 | sed 's|/||g')
+  setAlias $cluster $alias
+}
+
+oclogin () {
+  echo
+  echo oclogin is a wrapper for storing kubeconfigs and set aliases for clusters
+  [[ ! -d ~/.kube/configs ]] && mkdir -p ~/.kube/configs
+  rm ~/.kube/config 2>/dev/null
+  oc login --insecure-skip-tls-verify $@
+  [[ $? -ne 0 ]] && return
+  echo "#_# oc login $@" >> ~/.kube/config
+  echo
+  echo "Type a alias name (enter to cancel): \\c"
+  read alias
+
+  if [[ $alias != "" ]]; then
+    cluster=$(echo $@ | cut -d : -f 2 | sed 's|/||g')
+    setAlias $cluster $alias
+    cp ~/.kube/config ~/.kube/configs/$alias
+  fi
+}
+
+setAlias () {
+  cluster=$1
+  local alias=_$2
+  sed="sed -i"
+  [[ "$(uname)" == 'Darwin' ]] && sed="sed -i '' -e"
+  $=sed "s/name: ${cluster}:6443/name: ${alias}/g" ~/.kube/config
+  $=sed "s/cluster: ${cluster}:6443/cluster: ${alias}/g" ~/.kube/config
+}
+
