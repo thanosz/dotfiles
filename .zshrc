@@ -11,7 +11,7 @@ if [[ ! -d $HOME/.oh-my-zsh ]]; then
         popd
 fi
 if [[ ! -d  $HOME/.vim/pack/all-paks/start ]]; then
-        mkdir $HOME/.vim/pack/all-paks/start
+        mkdir -p $HOME/.vim/pack/all-paks/start
         pushd $HOME/.vim/pack/all-paks/start
         git clone https://github.com/jamessan/vim-gnupg.git
         git clone https://github.com/Yggdroot/indentLine.git
