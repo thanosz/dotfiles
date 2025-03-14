@@ -1,5 +1,5 @@
 occtx () {
-  [[ ! -d ~/.kube/configs ]] && mkdir ~/.kube/configs
+  [[ ! -d ~/.kube/configs ]] && mkdir -p ~/.kube/configs
 
   alias=$(ls ~/.kube/configs/ | fzf)
   [[ $alias == "" ]] && return

@@ -1,3 +1,5 @@
+export LANG="en_GB.UTF-8"
+export LC_ALL="en_GB.UTF-8"
 
 if [[ ! -d $HOME/.oh-my-zsh ]]; then
         echo Setting up .oh-my-zsh for the first time....
