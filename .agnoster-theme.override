@@ -55,7 +55,8 @@ dockerprompt() {
 
 prompt_docker() {
   [[ $DOCKERPROMPT_SET != "true" ]] && return
-  prompt_segment 055 'white' "🐳  $(docker context show)"
+  #prompt_segment 019 'white' "\xF0\x9F\x90\xB3  $(docker context show)"
+  prompt_segment 019 'white' "dckr:$(docker context show)"
 
 }
 
