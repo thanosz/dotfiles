@@ -2,8 +2,8 @@ syntax on
 " au BufNewFile,BufRead *.yaml,*.yml set et ts=2 sw=2 
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 filetype indent plugin on
-                        
 
+set synmaxcol=120
 set nocompatible
 set expandtab
 set ruler
