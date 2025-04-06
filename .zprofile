@@ -9,9 +9,9 @@ if [[ "$(uname)" == 'Darwin' ]]; then
         fi
         export SSH_AUTH_SOCK=~/.ssh/ssh_auth_sock
         ssh-add -q
-        ssh-add -q $HOME/.ssh/forpublic
+        [[ -f $HOME/.ssh/forpublic ]] && ssh-add -q $HOME/.ssh/forpublic
 else
         eval `ssh-agent` > /dev/null 2>&1
         ssh-add > /dev/null
-        ssh-add ~/.ssh/forpublic > /dev/null
+        [[ -f $HOME/.ssh/forpublic ]] && ssh-add ~/.ssh/forpublic > /dev/null
 fi

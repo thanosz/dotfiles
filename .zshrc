@@ -148,7 +148,7 @@ if which oc >/dev/null 2>&1; then source <(oc completion zsh | sed -e 's/kubectl
 #RPROMPT='%D{%a %d %b %Y %H:%M}'  
 #RPROMPT='[%F{yellow}%?%f]'
 
-HISTFILE=~/.zsh_history
+[[ -d $HOME/depot/userconf ]] && HISTFILE=$HOME/depot/userconf/.zsh_history.$(hostname -s)
 HISTSIZE=999999999
 SAVEHIST=$HISTSIZE
 
