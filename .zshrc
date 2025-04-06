@@ -21,6 +21,9 @@ if [[ ! -d  $HOME/.vim/pack/all-paks/start ]]; then
         popd
 fi
 
+ZSHRC_DIR=$(dirname $(readlink -f $HOME/.zshrc))
+[[ $TERM == "xterm" ]] && TERM=xterm-256color
+
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
@@ -133,9 +136,9 @@ VIRTUAL_ENV_DISABLE_PROMPT=true
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-[[ -f $HOME/.shellvars ]] && source $HOME/.shellvars
-[[ -f $HOME/.zsh_funcs ]] && source $HOME/.zsh_funcs
-[[ -f $HOME/.agnoster-theme.override ]] && source $HOME/.agnoster-theme.override
+[[ -f $ZSHRC_DIR/.shellvars ]] && source $ZSHRC_DIR/.shellvars
+[[ -f $ZSHRC_DIR/.zsh_funcs ]] && source $ZSHRC_DIR/.zsh_funcs
+[[ -f $ZSHRC_DIR/.agnoster-theme.override ]] && source $ZSHRC_DIR/.agnoster-theme.override
 [[ -f /usr/local/ibmcloud/autocomplete/zsh_autocomplete ]] && source /usr/local/ibmcloud/autocomplete/zsh_autocomplete
 
 if which kubectl > /dev/null 2>&1; then
