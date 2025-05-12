@@ -61,6 +61,6 @@ if [[ "$(uname)" == 'Darwin' ]]; then
 	if which gupdatedb > /dev/null; then 
 		alias updatedb='echo This is an alias; gupdatedb --localpaths="/Users /Applications /opt /" --prunepaths=/Volumes --prunepaths=/Users/than/Library/CloudStorage/Box-Box --output=$HOME/locatedb'
 	fi
-    eval "$(jenv init -)"
+    eval "$(jenv init -)" 2>/dev/null
 fi
 
