@@ -39,7 +39,7 @@ prompt_k8s() {
   [[ $K8SPROMPT_SET != "true" ]] && return
 
   kcurns=$(kubectl config get-contexts  | grep '^* ' | awk '{print $5}')
-  kcluster=$(kubectl config view -o jsonpath='{.clusters[].name}') #returns the first alphabetical cluster entry of .config
+  kcluster=$(kubectl config view -o jsonpath='{.clusters[].name}' | cut -d : -f 1)  #returns the first alphabetical cluster entry of .config
 
   k8s_symbol=$'\u2388'
 

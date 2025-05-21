@@ -5,6 +5,7 @@ if [[ ! -d $HOME/.oh-my-zsh ]]; then
         echo Setting up .oh-my-zsh for the first time....
         sleep 2
         sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --skip-chsh --keep-zshrc
+	[[ $? -ne 0 ]] && echo "Could not run oh-my-zsh script, exiting" && exit
         pushd $HOME/.oh-my-zsh/custom/plugins
         git clone https://github.com/zsh-users/zsh-autosuggestions.git
         git clone https://github.com/zsh-users/zsh-syntax-highlighting.git
