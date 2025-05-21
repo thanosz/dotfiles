@@ -41,7 +41,7 @@ setAlias () {
   local alias=_$2
   sed="sed -i"
   [[ "$(uname)" == 'Darwin' ]] && sed="sed -i '' -e"
-  $=sed "s/name: ${cluster}/name: ${alias}/g" ~/.kube/config
-  $=sed "s/cluster: ${cluster}/cluster: ${alias}/g" ~/.kube/config
+  $=sed "s/name: ${cluster}:[0-9]*/name: ${alias}/g" ~/.kube/config
+  $=sed "s/cluster: ${cluster}:[0-9]*/cluster: ${alias}/g" ~/.kube/config
 }
 
