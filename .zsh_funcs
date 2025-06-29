@@ -1,3 +1,5 @@
+
+
 occtx () {
   [[ ! -d ~/.kube/configs ]] && mkdir -p ~/.kube/configs
 
@@ -13,8 +15,7 @@ occtx () {
   fi
   $=command 
   [[ $? -ne 0 ]] && return
-  cluster=$(echo $command | cut -d : -f 2 | sed 's|/||g')
-  setAlias $cluster $alias
+  setAlias $command $alias
 }
 
 oclogin () {
@@ -30,18 +31,17 @@ oclogin () {
   read alias
 
   if [[ $alias != "" ]]; then
-    cluster=$(echo $@ | sed 's|https://||g')
-    setAlias $cluster $alias
+    command=$@
+    setAlias $command $alias
     cp ~/.kube/config ~/.kube/configs/$alias
   fi
 }
 
 setAlias () {
-  cluster=$1
+  local cluster=$(echo $1 | grep -oE 'https?://[^ ]+|api\.[^ ]+' | sed -E 's|https?://||; s|:6443||')
   local alias=_$2
-  sed="sed -i"
-  [[ "$(uname)" == 'Darwin' ]] && sed="gsed" #"sed -i '' -e"
-  $=sed -i "s/name: ${cluster}:[0-9]*/name: ${alias}/g" ~/.kube/config
-  $=sed -i "s/cluster: ${cluster}:[0-9]*/cluster: ${alias}/g" ~/.kube/config
+  [[ "$(uname)" == 'Darwin' ]] && sed="gsed" || sed="sed"
+  $=sed -i "s|name: ${cluster}:[0-9]*|name: ${alias}|g" ~/.kube/config
+  $=sed -i "s|cluster: ${cluster}:[0-9]*|cluster: ${alias}|g" ~/.kube/config
 }
 
