@@ -30,7 +30,7 @@ oclogin () {
   read alias
 
   if [[ $alias != "" ]]; then
-    cluster=$(echo $@ | cut -d : -f 2 | sed 's|/||g')
+    cluster=$(echo $@ | sed 's|https://||g')
     setAlias $cluster $alias
     cp ~/.kube/config ~/.kube/configs/$alias
   fi
@@ -40,8 +40,8 @@ setAlias () {
   cluster=$1
   local alias=_$2
   sed="sed -i"
-  [[ "$(uname)" == 'Darwin' ]] && sed="sed -i '' -e"
-  $=sed "s/name: ${cluster}:[0-9]*/name: ${alias}/g" ~/.kube/config
-  $=sed "s/cluster: ${cluster}:[0-9]*/cluster: ${alias}/g" ~/.kube/config
+  [[ "$(uname)" == 'Darwin' ]] && sed="gsed" #"sed -i '' -e"
+  $=sed -i "s/name: ${cluster}:[0-9]*/name: ${alias}/g" ~/.kube/config
+  $=sed -i "s/cluster: ${cluster}:[0-9]*/cluster: ${alias}/g" ~/.kube/config
 }
 
