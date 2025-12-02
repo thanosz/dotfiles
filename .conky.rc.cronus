@@ -56,7 +56,7 @@ ${color royalblue}${font play:bold:size=10}CPU ${hr 2}${color}
 ${font play:normal:size=9}${exec cat /proc/cpuinfo | grep 'model name' | sed -e 's/model name.*: //' | cut -d ' ' -f 4,3,6 | tail -n 1 }
 ${color white}${font play:bold:size=8}$freq MHz, ${color orange}${execi 1 sensors |grep 'Core 0' |awk '{print$3}'}${color}, ${font play:normal:size=8}${execi 1 sensors | grep fan1 | awk '{print $2,$3}'}${color}${font}
 ${font play:normal:size=8}${execi 10 WATT=$(echo "scale=1; `cat /sys/devices/virtual/powercap/intel-rapl-mmio/intel-rapl-mmio:0/constraint_0_power_limit_uw` / 1000000" | bc); GOV=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor); echo "PWR: ${WATT} Watt (${GOV})"} 
-${font play:normal:size=9}${cpugraph cpu FFFF00 FF0000 s -t}
+${font play:normal:size=9}${cpugraph cpu0 0096FF FF0000 s -t}
 CPU: ${cpu cpu0}% ${color brown}${cpubar cpu0}${color}
 ${cpubar cpu1 8,33}  ${cpubar cpu2 8,33}  ${cpubar cpu3 8,33}  ${cpubar cpu4 8,33}
 ${cpubar cpu5 8,33}  ${cpubar cpu6 8,33}  ${cpubar cpu7 8,33}  ${cpubar cpu8 8,33}
@@ -90,17 +90,11 @@ ${font play:normal:size=8}Down ${downspeedf wlo1} k/s ${alignr}Up ${upspeedf wlo
 ${downspeedgraph wlo1 20,71 dddddd  009900 0} ${alignr}${upspeedgraph wlo1 20,71 dddddd  800000 0 -l}
 ${font play:normal:size=8}Total ${totaldown wlo1} ${alignr}Total ${totalup wlo1}${endif}
 #
-${if_existing /sys/class/net/eno2/operstate up}
+${if_up eno2}
 ${font play:bold:size=9}wired${color green} $alignr ${addr eno2}${color}
 ${font play:normal:size=8}Down ${downspeedf eno2} k/s ${alignr}Up ${upspeedf eno2} k/s
 ${downspeedgraph eno2 20,71 dddddd 009900 0 -t } ${alignr}${upspeedgraph eno2 20,71 dddddd 800000 0 -t  }
 ${font play:normal:size=8}Total ${totaldown eno2} ${alignr}Total ${totalup eno2}${endif}
-#
-${if_existing /sys/class/net/enp10s0u1u2/operstate up}
-${font play:bold:size=9}wired${color green} $alignr ${addr enp10s0u1u2}${color}
-${font play:normal:size=8}Down ${downspeedf enp10s0u1u2} k/s ${alignr}Up ${upspeedf enp10s0u1u2} k/s
-${downspeedgraph enp10s0u1u2 20,71 dddddd 009900 0 -t } ${alignr}${upspeedgraph enp10s0u1u2 20,71 dddddd 800000 0 -t  }
-${font play:normal:size=8}Total ${totaldown enp10s0u1u2} ${alignr}Total ${totalup enp10s0u1u2}${endif}
 #
 ${if_existing /sys/class/net/vpn0/operstate up}
 ${font play:bold:size=9}vpn0 ${color green} $alignr ${addr vpn0}${color}

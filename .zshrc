@@ -102,9 +102,9 @@ plugins=(git fzf zsh-completions zsh-autosuggestions zsh-syntax-highlighting his
 #plugins=(zsh-peco-history)
 #ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern cursor)
 
+source $ZSH/oh-my-zsh.sh
 [[ -f $ZSHRC_DIR/.shellvars ]] && source $ZSHRC_DIR/.shellvars
 [[ -f $ZSHRC_DIR/.zsh_funcs ]] && source $ZSHRC_DIR/.zsh_funcs
-source $ZSH/oh-my-zsh.sh
 
 # User configuration
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=white,bg=240"

@@ -48,12 +48,12 @@ if ! which vagrant &>/dev/null; then
 fi
 
 ################ MACOS #################
-if [[ "$(uname)" == 'Darwin' ]]; then
+if [[ "$(uname -s)" == 'Darwin' ]]; then
 	unalias ip
   export HOMEBREW_CASK_OPTS=--no-quarantine
 	alias xsd_open=open
 	alias find=gfind
-	alias brew-upgrade-casks="brew outdated --cask --verbose --greedy | grep -v '(latest)' | awk '{print \$1}' | xargs echo | xargs brew reinstall --cask"
+	alias brew-upgrade-casks="brew outdated --cask --verbose --greedy | grep -v '(latest)' | awk '{print \$1}' | xargs echo | xargs brew upgrade --cask"
 
 	if which glocate > /dev/null; then
     alias locate=glocate

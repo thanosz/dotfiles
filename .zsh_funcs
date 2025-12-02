@@ -1,4 +1,13 @@
 
+ocview() {
+
+        [[ ! -d ~/.kube/configs ]] && echo "Noop, configs not found" && exit 1
+        alias=$(ls ~/.kube/configs/ | fzf)
+        [[ $alias == "" ]] && return
+        selected=~/.kube/configs/$alias
+        echo $selected: $(grep '#_#' $selected | cut -d ' ' -f 2-)
+ }
+        
 
 occtx () {
   [[ ! -d ~/.kube/configs ]] && mkdir -p ~/.kube/configs
@@ -45,3 +54,5 @@ setAlias () {
   $=sed -i "s|cluster: ${cluster}:[0-9]*|cluster: ${alias}|g" ~/.kube/config
 }
 
+
+alias ztheme='(){ export ZSH_THEME="$@" && source $ZSH/oh-my-zsh.sh }'
