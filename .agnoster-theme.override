@@ -81,7 +81,6 @@ build_prompt() {
   prompt_status
   prompt_context
   prompt_virtualenv
-  prompt_aws
   prompt_docker
   prompt_k8s
   prompt_dir
@@ -90,4 +89,3 @@ build_prompt() {
   prompt_hg
   prompt_end
 }
-

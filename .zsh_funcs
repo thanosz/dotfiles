@@ -1,58 +1,54 @@
-
 ocview() {
-
-        [[ ! -d ~/.kube/configs ]] && echo "Noop, configs not found" && exit 1
-        alias=$(ls ~/.kube/configs/ | fzf)
-        [[ $alias == "" ]] && return
-        selected=~/.kube/configs/$alias
-        echo $selected: $(grep '#_#' $selected | cut -d ' ' -f 2-)
- }
-        
-
-occtx () {
-  [[ ! -d ~/.kube/configs ]] && mkdir -p ~/.kube/configs
-
-  alias=$(ls ~/.kube/configs/ | fzf)
-  [[ $alias == "" ]] && return
-  selected=~/.kube/configs/$alias
-  rm ~/.kube/config 2>/dev/null
-
-  command=$(grep '#_#' $selected | cut -d ' ' -f 2-)
-  if [[ $command == "" ]]; then
-    cp $selected ~/.kube/config
-    return
-  fi
-  $=command 
-  [[ $? -ne 0 ]] && return
-  setAlias $command $alias
+	[[ ! -d ~/.kube/configs ]] && echo "Noop, configs not found" && exit 1
+	alias=$(ls ~/.kube/configs/ | fzf)
+	[[ $alias == "" ]] && return
+	selected=~/.kube/configs/$alias
+	echo $selected: $(grep '#_#' $selected | cut -d ' ' -f 2-)
 }
 
-oclogin () {
-  echo
-  echo oclogin is a wrapper for storing kubeconfigs and set aliases for clusters
-  [[ ! -d ~/.kube/configs ]] && mkdir -p ~/.kube/configs
-  rm ~/.kube/config 2>/dev/null
-  oc login --insecure-skip-tls-verify $@
-  [[ $? -ne 0 ]] && return
-  echo "#_# oc login $@" >> ~/.kube/config
-  echo
-  echo "Type a alias name (enter to cancel): \\c"
-  read alias
+occtx() {
+	[[ ! -d ~/.kube/configs ]] && mkdir -p ~/.kube/configs
 
-  if [[ $alias != "" ]]; then
-    command=$@
-    setAlias $command $alias
-    cp ~/.kube/config ~/.kube/configs/$alias
-  fi
+	alias=$(ls ~/.kube/configs/ | fzf)
+	[[ $alias == "" ]] && return
+	selected=~/.kube/configs/$alias
+	rm ~/.kube/config 2>/dev/null
+
+	command=$(grep '#_#' $selected | cut -d ' ' -f 2-)
+	if [[ $command == "" ]]; then
+		cp $selected ~/.kube/config
+		return
+	fi
+	$=command
+	[[ $? -ne 0 ]] && return
+	setAlias $command $alias
 }
 
-setAlias () {
-  local cluster=$(echo $1 | grep -oE 'https?://[^ ]+|api\.[^ ]+' | sed -E 's|https?://||; s|:6443||')
-  local alias=_$2
-  [[ "$(uname)" == 'Darwin' ]] && sed="gsed" || sed="sed"
-  $=sed -i "s|name: ${cluster}:[0-9]*|name: ${alias}|g" ~/.kube/config
-  $=sed -i "s|cluster: ${cluster}:[0-9]*|cluster: ${alias}|g" ~/.kube/config
+oclogin() {
+	echo
+	echo oclogin is a wrapper for storing kubeconfigs and set aliases for clusters
+	[[ ! -d ~/.kube/configs ]] && mkdir -p ~/.kube/configs
+	rm ~/.kube/config 2>/dev/null
+	oc login --insecure-skip-tls-verify $@˝
+	[[ $? -ne 0 ]] && return
+	echo "#_# oc login $@" >>~/.kube/config
+	echo
+	echo "Type a alias name (enter to cancel): \\c"
+	read alias
+
+	if [[ $alias != "" ]]; then
+		command=$@
+		setAlias $command $alias
+		cp ~/.kube/config ~/.kube/configs/$alias
+	fi
 }
 
+setAlias() {
+	local cluster=$(echo $1 | grep -oE 'https?://[^ ]+|api\.[^ ]+' | sed -E 's|https?://||; s|:6443||')
+	local alias=_$2
+	[[ "$(uname)" == 'Darwin' ]] && sed="gsed" || sed="sed"
+	$=sed -i "s|name: ${cluster}:[0-9]*|name: ${alias}|g" ~/.kube/config
+	$=sed -i "s|cluster: ${cluster}:[0-9]*|cluster: ${alias}|g" ~/.kube/config
+}
 
 alias ztheme='(){ export ZSH_THEME="$@" && source $ZSH/oh-my-zsh.sh }'
