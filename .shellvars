@@ -49,8 +49,9 @@ fi
 
 ################ MACOS #################
 if [[ "$(uname -s)" == 'Darwin' ]]; then
-	unalias ip
-  export HOMEBREW_CASK_OPTS=--no-quarantine
+        # Set PATH, MANPATH, etc., for Homebrew.
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+        export HOMEBREW_CASK_OPTS=--no-quarantine
 	alias xsd_open=open
 	alias find=gfind
 	alias brew-upgrade-casks="brew outdated --cask --verbose --greedy | grep -v '(latest)' | awk '{print \$1}' | xargs echo | xargs brew upgrade --cask"
