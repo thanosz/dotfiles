@@ -29,7 +29,7 @@ oclogin() {
 	echo oclogin is a wrapper for storing kubeconfigs and set aliases for clusters
 	[[ ! -d ~/.kube/configs ]] && mkdir -p ~/.kube/configs
 	rm ~/.kube/config 2>/dev/null
-	oc login --insecure-skip-tls-verify $@˝
+	oc login --insecure-skip-tls-verify $@
 	[[ $? -ne 0 ]] && return
 	echo "#_# oc login $@" >>~/.kube/config
 	echo
